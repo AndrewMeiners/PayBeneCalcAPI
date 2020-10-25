@@ -29,7 +29,7 @@ namespace BenefitsCalculatorAPI
             services.AddControllers();
 
             services.AddDbContext<BenefitsDBContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
 
             services.AddCors();
         }

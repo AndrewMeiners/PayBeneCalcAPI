@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace BenefitsCalculatorAPI.Models
 {
-    public class Employee
+    public class Dependent
     {
         [Key]
-        public int id { get; set; }
+        public int dependentId { get; set; }
 
-        [Column(TypeName ="nvarchar(100)")]
-        public string employeeName { get; set; }
+        public int providerId { get; set; }
 
+        [Column(TypeName = "nvarchar(100)")]
+        public string dependentName { get; set; }
     }
 }

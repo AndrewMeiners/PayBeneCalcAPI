@@ -14,5 +14,7 @@ namespace BenefitsCalculatorAPI.Models
         }
 
         public DbSet<Employee> Employee { get; set; }
+
+        public DbSet<Dependent> Dependent { get; set; }
     }
 }
