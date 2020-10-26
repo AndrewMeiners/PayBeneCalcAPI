@@ -39,6 +39,48 @@ namespace BenefitsCalculatorAPI.Controllers
             return employee;
         }
 
+        // GET: api/Employee/Cost/1
+        [HttpGet("Cost/{id}")]
+        public async Task<ActionResult<double>> GetEmployeeCost(int id)
+        {
+            double paycheck = 2000;
+            double payPeriods = 26;
+            double discountRate = 0.9;
+            double employeeCost = 1000;
+            double perDependentCost = 500;
+            double totalDependentCost = 0;
+
+            // Need to include the Dependents to Eager load related
+            var employee = await _context.Employee.Include(e => e.Dependents).FirstOrDefaultAsync(e => e.ID == id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            if (employee.FirstName.StartsWith('A'))
+            {
+                employeeCost *= discountRate;
+            }
+
+            if (employee.Dependents != null)
+            {
+                foreach (Dependent dependent in employee.Dependents)
+                {
+                    if (employee.FirstName.StartsWith('A'))
+                    {
+                        totalDependentCost += (perDependentCost * discountRate);
+                    }
+                    else
+                    {
+                        totalDependentCost += perDependentCost;
+                    }
+                }
+            }
+
+            return (paycheck * payPeriods) - employeeCost - totalDependentCost;
+        }
+
         // PUT: api/Employee/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
