@@ -23,14 +23,15 @@ namespace BenefitsCalculatorAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
         {
-            return await _context.Employee.ToListAsync();
+            return await _context.Employee.Include(e => e.Dependents).ToListAsync();
         }
 
         // GET: api/Employee/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
+            //var employee = await _context.Employee.FindAsync(id);
+            var employee = await _context.Employee.Include(e => e.Dependents).FirstOrDefaultAsync(e => e.ID == id);
 
             if (employee == null)
             {
