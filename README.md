@@ -8,10 +8,10 @@ The Benefits Web API is currently built to run on IIS Express and builds to a SQ
 
 ## Available APIs -
 
-Currently available REST endpoints are served at
-http://localhost:61285/api/Employee
-and
-http://localhost:61285/api/Dependent
+Currently available REST endpoints are served at <br>
+http://localhost:61285/api/Employee <br>
+and <br>
+http://localhost:61285/api/Dependent <br>
 
 An endpoint is available to calculate the cost of an Employee's benefits at the URL
 http://localhost:61285/api/Employee/Cost/{id}
