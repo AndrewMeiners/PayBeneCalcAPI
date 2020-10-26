@@ -9,48 +9,48 @@ namespace BenefitsCalculatorAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class DependentController : ControllerBase
     {
         private readonly BenefitsDBContext _context;
 
-        public EmployeeController(BenefitsDBContext context)
+        public DependentController(BenefitsDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/Employee
+        // GET: api/Dependent
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
+        public async Task<ActionResult<IEnumerable<Dependent>>> GetDependent()
         {
-            return await _context.Employee.ToListAsync();
+            return await _context.Dependent.ToListAsync();
         }
 
-        // GET: api/Employee/5
+        // GET: api/Dependent/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
+        public async Task<ActionResult<Dependent>> GetDependent(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
+            var dependent = await _context.Dependent.FindAsync(id);
 
-            if (employee == null)
+            if (dependent == null)
             {
                 return NotFound();
             }
 
-            return employee;
+            return dependent;
         }
 
-        // PUT: api/Employee/5
+        // PUT: api/Dependent/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+        public async Task<IActionResult> PutDependent(int id, Dependent dependent)
         {
-            if (id != employee.ID)
+            if (id != dependent.ID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(employee).State = EntityState.Modified;
+            _context.Entry(dependent).State = EntityState.Modified;
 
             try
             {
@@ -58,7 +58,7 @@ namespace BenefitsCalculatorAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EmployeeExists(id))
+                if (!DependentExists(id))
                 {
                     return NotFound();
                 }
@@ -71,37 +71,37 @@ namespace BenefitsCalculatorAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Employee
+        // POST: api/Dependent
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult<Dependent>> PostDependent(Dependent dependent)
         {
-            _context.Employee.Add(employee);
+            _context.Dependent.Add(dependent);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEmployee", new { id = employee.ID }, employee);
+            return CreatedAtAction("GetDependent", new { id = dependent.ID }, dependent);
         }
 
-        // DELETE: api/Employee/5
+        // DELETE: api/Dependent/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        public async Task<ActionResult<Dependent>> DeleteDependent(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
-            if (employee == null)
+            var dependent = await _context.Dependent.FindAsync(id);
+            if (dependent == null)
             {
                 return NotFound();
             }
 
-            _context.Employee.Remove(employee);
+            _context.Dependent.Remove(dependent);
             await _context.SaveChangesAsync();
 
-            return employee;
+            return dependent;
         }
 
-        private bool EmployeeExists(int id)
+        private bool DependentExists(int id)
         {
-            return _context.Employee.Any(e => e.ID == id);
+            return _context.Dependent.Any(e => e.ID == id);
         }
     }
 }
