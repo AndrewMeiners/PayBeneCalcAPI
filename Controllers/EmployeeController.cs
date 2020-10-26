@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BenefitsCalculatorAPI.Models;
+using Newtonsoft.Json;
 
 namespace BenefitsCalculatorAPI.Controllers
 {
@@ -67,7 +68,7 @@ namespace BenefitsCalculatorAPI.Controllers
             {
                 foreach (Dependent dependent in employee.Dependents)
                 {
-                    if (employee.FirstName.StartsWith('A'))
+                    if (dependent.FirstName.StartsWith('A'))
                     {
                         totalDependentCost += (perDependentCost * discountRate);
                     }
@@ -77,7 +78,7 @@ namespace BenefitsCalculatorAPI.Controllers
                     }
                 }
             }
-
+            
             return (paycheck * payPeriods) - employeeCost - totalDependentCost;
         }
 

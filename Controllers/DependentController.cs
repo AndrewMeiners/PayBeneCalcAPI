@@ -77,9 +77,19 @@ namespace BenefitsCalculatorAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Dependent>> PostDependent(Dependent dependent)
+        public async Task<ActionResult<Dependent>> PostDependent(int parentId, Dependent dependent)
         {
+            var parentEntity = _context.Employee.Find(parentId);
+
+            if (parentEntity == null)
+            {
+                return BadRequest();
+            }
+
+            _context.Employee.Attach(parentEntity);
             _context.Dependent.Add(dependent);
+            parentEntity.Dependents.Add(dependent);
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDependent", new { id = dependent.ID }, dependent);
