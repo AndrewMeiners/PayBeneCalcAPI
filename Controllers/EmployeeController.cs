@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BenefitsCalculatorAPI.Models;
-using Newtonsoft.Json;
+using BenefitsCalculatorAPI.Services;
 
 namespace BenefitsCalculatorAPI.Controllers
 {
@@ -13,25 +11,29 @@ namespace BenefitsCalculatorAPI.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly BenefitsDBContext _context;
+        private readonly CalculatorService calculatorService;
+        public readonly EmployeeDAO employeeDAO;
 
         public EmployeeController(BenefitsDBContext context)
         {
             _context = context;
+            calculatorService = new CalculatorService(_context);
+            employeeDAO = new EmployeeDAO(_context);
         }
 
         // GET: api/Employee
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-            return await _context.Employee.Include(e => e.Dependents).ToListAsync();
+            var employees = await employeeDAO.GetEmployees();
+            return employees;
         }
 
         // GET: api/Employee/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            //var employee = await _context.Employee.FindAsync(id);
-            var employee = await _context.Employee.Include(e => e.Dependents).FirstOrDefaultAsync(e => e.ID == id);
+            var employee = await employeeDAO.GetEmployee(id);
 
             if (employee == null)
             {
@@ -45,42 +47,7 @@ namespace BenefitsCalculatorAPI.Controllers
         [HttpGet("Cost/{id}")]
         public async Task<ActionResult<double>> GetEmployeeCost(int id)
         {
-            double paycheck = 2000;
-            double payPeriods = 26;
-            double discountRate = 0.9;
-            double employeeCost = 1000;
-            double perDependentCost = 500;
-            double totalDependentCost = 0;
-
-            // Need to include the Dependents to Eager load related
-            var employee = await _context.Employee.Include(e => e.Dependents).FirstOrDefaultAsync(e => e.ID == id);
-
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            if (employee.FirstName.StartsWith('A'))
-            {
-                employeeCost *= discountRate;
-            }
-
-            if (employee.Dependents != null)
-            {
-                foreach (Dependent dependent in employee.Dependents)
-                {
-                    if (dependent.FirstName.StartsWith('A'))
-                    {
-                        totalDependentCost += (perDependentCost * discountRate);
-                    }
-                    else
-                    {
-                        totalDependentCost += perDependentCost;
-                    }
-                }
-            }
-            
-            return (paycheck * payPeriods) - employeeCost - totalDependentCost;
+            return await calculatorService.CalculateEmployeePayrollAsync(id);
         }
 
         // PUT: api/Employee/5
@@ -94,23 +61,7 @@ namespace BenefitsCalculatorAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(employee).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await employeeDAO.PutEmployee(id, employee);
 
             return NoContent();
         }
@@ -131,21 +82,9 @@ namespace BenefitsCalculatorAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Employee>> DeleteEmployee(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            _context.Employee.Remove(employee);
-            await _context.SaveChangesAsync();
+            var employee = await employeeDAO.DeleteEmployee(id);
 
             return employee;
-        }
-
-        private bool EmployeeExists(int id)
-        {
-            return _context.Employee.Any(e => e.ID == id);
         }
     }
 }
